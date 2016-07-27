@@ -1,7 +1,28 @@
+<!DOCTYPE html>
 <html>
+
+<head>
+  <script src="js/jquery-3.0.0.js"></script>
+</head>
+
 <body>
-<p>
-Herro Fleeshums!
-</p>
+    <form name="searchForm" id="wikiSearchForm">
+
+      <input type="text" name="searchThis" placeholder="Search Wikipedia Articles" id="searchText" />
+
+      <input type="button" value="Search!" onclick="wikiSearch()" />
+
+    </form>
+
 </body>
+
+<script>
+  function wikiSearch() {
+    var searchFor = document.forms.searchForm.searchThis.value;
+    alert(searchFor);
+    //$(#'searchText').attr('value', 'stuff');
+  }
+
+</script>
+
 </html>
