@@ -27,7 +27,8 @@
 
     .rightAlign {
         text-align: right;
- }
+    }
+
  </style>
 
 <body>
@@ -44,18 +45,20 @@
     <div class="container">
         <div class="row">
 
-            <a class="col-xs-6 rightAlign" href="https://en.wikipedia.org/wiki/Special:Random" target="_blank">
+            <a class="col-sm-6 rightAlign" href="https://en.wikipedia.org/wiki/Special:Random" target="_blank">
                 <span class="glyphicon glyphicon-random">
         </span> Random Wikipedia Article
             </a>
 
-            <div class="col-xs-6">
+            <div class="col-sm-6">
                 <span class="glyphicon glyphicon-search"></span>
                 <input type="text" name="searchThis" placeholder="Search Wikipedia Articles" id="searchText" />
                 <input type="button" value="Search!" id="searchButton" />
 
             </div>
+        <div class="row" id="resultsList">
 
+        </div>
 
         </div>
     </div>
@@ -79,12 +82,11 @@
     function parseJSON(data) {
       var searchResults = data;
       console.log(searchResults);
-      var titles = searchResults.query.search[1]['title'];
+      var titles = [];
+        for (i = 0; i < 10; i++) {
+          titles[i] = searchResults.query.search[i]['title'];
+        }
       console.log(titles);
-    }
-
-    function jsonCallback(json) {
-      console.log(json);
     }
 
     function wikiSearch() {
