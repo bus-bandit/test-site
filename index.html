@@ -26,11 +26,9 @@
     }
 
     .rightAlign {
-      text-align: right;
-    }
-
-
-</style>
+        text-align: right;
+ }
+ </style>
 
 <body>
 
@@ -52,9 +50,9 @@
             </a>
 
             <div class="col-xs-6">
-                    <span class="glyphicon glyphicon-search"></span>
-                    <input type="text" name="searchThis" placeholder="Search Wikipedia Articles" id="searchText" />
-                    <input type="button" value="Search!"  id="searchButton" />
+                <span class="glyphicon glyphicon-search"></span>
+                <input type="text" name="searchThis" placeholder="Search Wikipedia Articles" id="searchText" />
+                <input type="button" value="Search!" id="searchButton" />
 
             </div>
 
@@ -74,25 +72,42 @@
         });
     };
 
-$(document).ready(function() {
-  $("#searchButton").click(wikiSearch);
-});
+    $(document).ready(function() {
+        $("#searchButton").click(wikiSearch);
+    });
 
+    function parseJSON(data) {
+      var searchResults = data;
+      console.log(searchResults);
+      var titles = searchResults.query.search[1]['title'];
+      console.log(titles);
+    }
+
+    function jsonCallback(json) {
+      console.log(json);
+    }
 
     function wikiSearch() {
+      var data = [];
         var searchFor = document.getElementById("searchText").value;
         //var searchFor = document.forms.searchForm.searchThis.value;
-        alert(searchFor);
+        //alert(searchFor);
+        $.getJSON('https://en.wikipedia.org/w/api.php?action=query&format=json&callback=?&list=search&srsearch=' + encodeURIComponent(searchFor), function(data) {
+          parseJSON(data);
+        });
+        var results = [];
   /*      $.ajax({
-    url: '//www.wikidata.org/w/api.php',
-    data: {
-      format: 'json',
-      action: 'query',
-      list: 'search',
-      titles: ''
-    }
-  });
-  */
+            url: 'https://en.wikipedia.org/w/api.php',
+            data: {
+                action: 'query',
+                format: 'json',
+                callback: '',
+                list: 'search',
+                srsearch: searchFor
+            }
+            //success: parseJSON(results)
+        });
+*/
     }
 </script>
 
