@@ -25,11 +25,25 @@
         text-align: center;
     }
 
+    .h4 {
+        text-align: left;
+    }
+
+    .btn {
+      text-align: left;
+      display: block;
+      width: 100%;
+    }
+
     .rightAlign {
         text-align: right;
     }
 
- </style>
+    ul {
+      padding-left: 0px;
+      list-style-type: none;
+    }
+</style>
 
 <body>
 
@@ -56,9 +70,15 @@
                 <input type="button" value="Search!" id="searchButton" />
 
             </div>
-        <div class="row" id="resultsList">
+            <div>
+              <br /><br />
+            </div>
+            <div class="row" id="resultsList">
 
-        </div>
+              <div class="col-xs-12">
+              </div>
+
+            </div>
 
         </div>
     </div>
@@ -79,37 +99,53 @@
         $("#searchButton").click(wikiSearch);
     });
 
-    function parseJSON(data) {
-      var searchResults = data;
-      console.log(searchResults);
+    function makeList(searchResults, resultsLength) {
       var titles = [];
-        for (i = 0; i < 10; i++) {
+      var snippets = [];
+      for (i = 0; i < resultsLength; i++) {
           titles[i] = searchResults.query.search[i]['title'];
+          snippets[i] = searchResults.query.search[i]['snippet'];
+      }
+      //console.log(titles);
+      //console.log(snippets);
+      document.getElementById('resultsList').innerHTML = '';
+      var list = document.createElement('ul');
+      for (i = 0; i < resultsLength; i++) {
+      var result = document.createElement('li');
+      var item = document.createElement('a');
+      item.setAttribute('class','btn btn-default');
+      item.setAttribute('href','https://en.wikipedia.org/wiki/' + encodeURIComponent(titles[i]));
+      item.setAttribute('target','_blank');
+      item.setAttribute('role','button')
+      item.innerHTML = '<h4>' + titles[i] + '</h4><h5>' + snippets[i] + '</h5>';
+      result.appendChild(item);
+      list.appendChild(result);
+      }
+      document.getElementById('resultsList').appendChild(list);
+    }
+
+    function verifyJSON(data) {
+        var searchResults = data;
+        console.log(searchResults);
+        var resultsLength = Object.keys(searchResults.query.search).length;
+        console.log(resultsLength);
+        if (resultsLength === 0) {
+          document.getElementById('resultsList').innerHTML = 'Sorry, no results found.';
         }
-      console.log(titles);
+        else {
+          makeList(searchResults, resultsLength);
+        }
     }
 
     function wikiSearch() {
-      var data = [];
+        var data = [];
         var searchFor = document.getElementById("searchText").value;
         //var searchFor = document.forms.searchForm.searchThis.value;
         //alert(searchFor);
         $.getJSON('https://en.wikipedia.org/w/api.php?action=query&format=json&callback=?&list=search&srsearch=' + encodeURIComponent(searchFor), function(data) {
-          parseJSON(data);
+            verifyJSON(data);
         });
         var results = [];
-  /*      $.ajax({
-            url: 'https://en.wikipedia.org/w/api.php',
-            data: {
-                action: 'query',
-                format: 'json',
-                callback: '',
-                list: 'search',
-                srsearch: searchFor
-            }
-            //success: parseJSON(results)
-        });
-*/
     }
 </script>
 
