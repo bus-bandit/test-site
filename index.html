@@ -25,7 +25,7 @@
         text-align: center;
     }
 
-    .h4 {
+    .titleContainer {
         text-align: left;
     }
 
@@ -34,16 +34,19 @@
     }
 
     .btn {
-        width: 100%;
+        width: 90%;
+        margin-left: 5%;
+        margin-right: 5%;
     }
 
     p {
-      white-space: nowrap;
-      overflow: hidden;
-      display: block;
-      text-overflow: ellipsis;
-      background-color: yellow;
+        white-space: nowrap;
+        overflow: hidden;
+        display: block;
+        text-overflow: ellipsis;
+        background-color: yellow;
     }
+
 
 </style>
 
@@ -73,12 +76,13 @@
 
             </div>
             <div>
-              <br /><br />
+                <br />
+                <br />
             </div>
             <div class="row" id="resultsList">
 
-              <div class="col-xs-12">
-              </div>
+                <div class="col-xs-12">
+                </div>
 
             </div>
 
@@ -88,88 +92,59 @@
 </body>
 
 <script>
-    window.onload = function() {
-        var searchInput = document.getElementById("searchText");
-        searchInput.addEventListener("keydown", function(e) {
-            if (e.keyCode === 13) {
+//Listeners to check if user hit "Enter" or clicked "Search"
+    $(document).ready(function() {
+        $('#searchButton').click(wikiSearch);
+        $('#searchText').on('keydown', function() {
+            if (event.which === 13) {
                 wikiSearch();
             }
         });
-    };
-
-    $(document).ready(function() {
-        $("#searchButton").click(wikiSearch);
     });
 
+//Peels out titles and snippets from JSON searchResults, loads them into containers and makes them into links disguised as buttons.
     function makeList(searchResults, resultsLength) {
-      var titles = [];
-      var snippets = [];
-      for (i = 0; i < resultsLength; i++) {
-          titles[i] = searchResults.query.search[i]['title'];
-          snippets[i] = searchResults.query.search[i]['snippet'];
-          snippets[i] = snippets[i].concat('...');
-      }
-      //console.log(titles);
-      console.log(snippets);
-
-
-      for (i = 0; i < resultsLength; i++) {
-        var resultContainer = document.createElement('div');
-        resultContainer.setAttribute('class','titleContainer');
-        resultContainer.innerHTML = '<h4>' + titles[i] + '</h4><p>' + snippets[i] + '</p>';
-        var linkButton = document.createElement('a');
-        linkButton.setAttribute('class','btn btn-default');
-        linkButton.setAttribute('href','https://en.wikipedia.org/wiki/' + encodeURIComponent(titles[i]));
-        linkButton.setAttribute('target','_blank');
-        linkButton.appendChild(resultContainer);
-        document.getElementById('resultsList').appendChild(linkButton);
-        //document.getElementById('resultsList').appendChild(snippetContainer);
-      }
-
-/*
-      $('#links').attr({
-        'href': 'https://en.wikipedia.org/wiki/' + encodeURIComponent(titles[i]),
-        'class': 'btn-default',
-        'target': '_blank'
-      });
-
-
-      document.getElementById('resultsList').innerHTML = '';
-      var list = document.createElement('ul');
-      for (i = 0; i < resultsLength; i++) {
-      var result = document.createElement('li');
-      var item = document.createElement('a');
-      item.setAttribute('class','btn btn-default');
-      item.setAttribute('href','https://en.wikipedia.org/wiki/' + encodeURIComponent(titles[i]));
-      item.setAttribute('target','_blank');
-      item.setAttribute('role','button')
-      item.innerHTML = '<h4>' + titles[i] + '</h4><h5>' + snippets[i] + '</h5>';
-      result.appendChild(item);
-      list.appendChild(result);
-      }
-      document.getElementById('resultsList').appendChild(list);
-*/
+        var titles = [];
+        var snippets = [];
+        $('#resultsList').html('');
+        for (i = 0; i < resultsLength; i++) {
+            titles[i] = searchResults.query.search[i]['title'];
+            snippets[i] = searchResults.query.search[i]['snippet'];
+            snippets[i] = snippets[i].concat('...');
+        }
+        //console.log(titles);
+        //console.log(snippets);
+        for (i = 0; i < resultsLength; i++) {
+            var resultContainer = document.createElement('div');
+            resultContainer.setAttribute('class', 'titleContainer');
+            resultContainer.innerHTML = '<h4>' + titles[i] + '</h4><p>' + snippets[i] + '</p>';
+            var linkButton = document.createElement('a');
+            linkButton.setAttribute('class', 'btn btn-default');
+            linkButton.setAttribute('href', 'https://en.wikipedia.org/wiki/' + encodeURIComponent(titles[i]));
+            linkButton.setAttribute('target', '_blank');
+            linkButton.appendChild(resultContainer);
+            document.getElementById('resultsList').appendChild(linkButton);
+        }
 
     }
 
+//Verify that there are indeed results from the search.  Post error if no search results, otherwise fire it to makeList().
     function verifyJSON(data) {
         var searchResults = data;
         console.log(searchResults);
         var resultsLength = Object.keys(searchResults.query.search).length;
         console.log(resultsLength);
         if (resultsLength === 0) {
-          document.getElementById('resultsList').innerHTML = 'Sorry, no results found.';
-        }
-        else {
-          makeList(searchResults, resultsLength);
+            document.getElementById('resultsList').innerHTML = 'Sorry, no results found.';
+        } else {
+            makeList(searchResults, resultsLength);
         }
     }
 
+//AJAX request to wikipedia using input from search field and firing it to verifyJSON().
     function wikiSearch() {
         var data = [];
         var searchFor = document.getElementById("searchText").value;
-        //var searchFor = document.forms.searchForm.searchThis.value;
-        //alert(searchFor);
         $.getJSON('https://en.wikipedia.org/w/api.php?action=query&format=json&callback=?&list=search&srsearch=' + encodeURIComponent(searchFor), function(data) {
             verifyJSON(data);
         });
