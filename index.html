@@ -29,21 +29,22 @@
         text-align: left;
     }
 
-    .btn {
-      text-align: left;
-      text-overflow: ellipsis;
-      width: 100%;
-    }
-
     .rightAlign {
         text-align: right;
     }
 
-    ul {
-      padding-left: 0px;
-      list-style-type: none;
-      text-overflow: ellipsis;
+    .btn {
+        width: 100%;
     }
+
+    p {
+      white-space: nowrap;
+      overflow: hidden;
+      display: block;
+      text-overflow: ellipsis;
+      background-color: yellow;
+    }
+
 </style>
 
 <body>
@@ -106,9 +107,33 @@
       for (i = 0; i < resultsLength; i++) {
           titles[i] = searchResults.query.search[i]['title'];
           snippets[i] = searchResults.query.search[i]['snippet'];
+          snippets[i] = snippets[i].concat('...');
       }
       //console.log(titles);
-      //console.log(snippets);
+      console.log(snippets);
+
+
+      for (i = 0; i < resultsLength; i++) {
+        var resultContainer = document.createElement('div');
+        resultContainer.setAttribute('class','titleContainer');
+        resultContainer.innerHTML = '<h4>' + titles[i] + '</h4><p>' + snippets[i] + '</p>';
+        var linkButton = document.createElement('a');
+        linkButton.setAttribute('class','btn btn-default');
+        linkButton.setAttribute('href','https://en.wikipedia.org/wiki/' + encodeURIComponent(titles[i]));
+        linkButton.setAttribute('target','_blank');
+        linkButton.appendChild(resultContainer);
+        document.getElementById('resultsList').appendChild(linkButton);
+        //document.getElementById('resultsList').appendChild(snippetContainer);
+      }
+
+/*
+      $('#links').attr({
+        'href': 'https://en.wikipedia.org/wiki/' + encodeURIComponent(titles[i]),
+        'class': 'btn-default',
+        'target': '_blank'
+      });
+
+
       document.getElementById('resultsList').innerHTML = '';
       var list = document.createElement('ul');
       for (i = 0; i < resultsLength; i++) {
@@ -123,6 +148,8 @@
       list.appendChild(result);
       }
       document.getElementById('resultsList').appendChild(list);
+*/
+
     }
 
     function verifyJSON(data) {
