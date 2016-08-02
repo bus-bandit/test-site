@@ -44,10 +44,22 @@
         overflow: hidden;
         display: block;
         text-overflow: ellipsis;
-        background-color: yellow;
     }
 
+    .buttonEntrance {
+        overflow: hidden;
+        animation-duration: 1s;
+        animation-name: slideIn;
+    }
 
+    @keyframes slideIn {
+        from {
+            margin-left: 100%;
+        }
+        to {
+            margin-left: 5%;
+        }
+    }
 </style>
 
 <body>
@@ -79,7 +91,7 @@
                 <br />
                 <br />
             </div>
-            <div class="row" id="resultsList">
+            <div class="row resultsList buttonEntrance" id="resultsList">
 
                 <div class="col-xs-12">
                 </div>
@@ -92,7 +104,7 @@
 </body>
 
 <script>
-//Listeners to check if user hit "Enter" or clicked "Search"
+    //Listeners to check if user hit "Enter" or clicked "Search"
     $(document).ready(function() {
         $('#searchButton').click(wikiSearch);
         $('#searchText').on('keydown', function() {
@@ -102,7 +114,7 @@
         });
     });
 
-//Peels out titles and snippets from JSON searchResults, loads them into containers and makes them into links disguised as buttons.
+    //Peels out titles and snippets from JSON searchResults, loads them into containers and makes them into links disguised as buttons.
     function makeList(searchResults, resultsLength) {
         var titles = [];
         var snippets = [];
@@ -119,29 +131,37 @@
             resultContainer.setAttribute('class', 'titleContainer');
             resultContainer.innerHTML = '<h4>' + titles[i] + '</h4><p>' + snippets[i] + '</p>';
             var linkButton = document.createElement('a');
-            linkButton.setAttribute('class', 'btn btn-default');
+            linkButton.setAttribute('class', 'btn btn-default animatedButton');
             linkButton.setAttribute('href', 'https://en.wikipedia.org/wiki/' + encodeURIComponent(titles[i]));
             linkButton.setAttribute('target', '_blank');
             linkButton.appendChild(resultContainer);
             document.getElementById('resultsList').appendChild(linkButton);
+            $('.animatedButton').css('margin-left', '100%');
+            $('.animatedButton').delay(i * 150).animate({
+                'margin-left': '5%'
+            }, 1000);
         }
 
     }
 
-//Verify that there are indeed results from the search.  Post error if no search results, otherwise fire it to makeList().
+    //Verify that there are indeed results from the search.  Post error if no search results, otherwise fire it to makeList().
     function verifyJSON(data) {
         var searchResults = data;
-        console.log(searchResults);
-        var resultsLength = Object.keys(searchResults.query.search).length;
-        console.log(resultsLength);
-        if (resultsLength === 0) {
-            document.getElementById('resultsList').innerHTML = 'Sorry, no results found.';
+        if (Object.prototype.hasOwnProperty.call(searchResults, 'error')) {
+            document.getElementById('resultsList').innerHTML = 'Sorry, there was an error with your search.  Please try again.';
         } else {
-            makeList(searchResults, resultsLength);
+            console.log(searchResults);
+            var resultsLength = Object.keys(searchResults.query.search).length;
+            console.log(resultsLength);
+            if (resultsLength === 0) {
+                document.getElementById('resultsList').innerHTML = 'Sorry, no results found.';
+            } else {
+                makeList(searchResults, resultsLength);
+            }
         }
     }
 
-//AJAX request to wikipedia using input from search field and firing it to verifyJSON().
+    //AJAX request to wikipedia using input from search field and firing it to verifyJSON().
     function wikiSearch() {
         var data = [];
         var searchFor = document.getElementById("searchText").value;
