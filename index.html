@@ -21,22 +21,60 @@
 </head>
 
 <style type="text/css">
+    body {
+      background: #93B1C6;
+      background: -webkit-linear-gradient(#C7D0D5, #93B1C6);
+      background: -o-linear-gradient(#C7D0D5, #93B1C6);
+      background: -moz-linear-gradient(#C7D0D5, #93B1C6);
+      background: linear-gradient(#C7D0D5, #93B1C6);
+      padding-top: 100px;
+      min-height: 100%;
+      margin: 0;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    .navbar-default {
+      background-color: #FF7148;
+      padding-bottom: 10px;
+      border-color: #93B1C6;
+    }
+
     .h1 {
         text-align: center;
+    }
+
+    .row {
+      margin-top: 10px;
     }
 
     .titleContainer {
         text-align: left;
     }
 
-    .rightAlign {
+    .randomArticle {
         text-align: right;
+    }
+
+    @media only screen and (max-width: 768px) {
+        .randomArticle {
+            text-align: center;
+        }
+        .searchField {
+            text-align: center;
+        }
     }
 
     .btn {
         width: 90%;
         margin-left: 5%;
         margin-right: 5%;
+    }
+
+    .randomButton {
+        width: auto;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     p {
@@ -46,19 +84,16 @@
         text-overflow: ellipsis;
     }
 
-    .buttonEntrance {
-        overflow: hidden;
-        animation-duration: 1s;
-        animation-name: slideIn;
+    .form-control {
+      display: inline-block;
+        width: auto;
     }
 
-    @keyframes slideIn {
-        from {
-            margin-left: 100%;
-        }
-        to {
-            margin-left: 5%;
-        }
+    .searchButton {
+      display: inline-block;
+      width: auto;
+      margin-left: auto;
+      margin-right: auto;
     }
 </style>
 
@@ -69,29 +104,33 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
 
-    <div class="h1">
-        Wikipedia Viewer - Free Code Camp
-    </div>
+    <nav class = "navbar navbar-default navbar-fixed-top">
+      <div class="h1">
+          Wikipedia Viewer - Free Code Camp
+      </div>
+    </nav>
 
     <div class="container">
         <div class="row">
 
-            <a class="col-sm-6 rightAlign" href="https://en.wikipedia.org/wiki/Special:Random" target="_blank">
-                <span class="glyphicon glyphicon-random">
+            <div class="col-sm-6 randomArticle">
+                <a class="btn btn-default randomButton" href="https://en.wikipedia.org/wiki/Special:Random" target="_blank">
+                    <span class="glyphicon glyphicon-random">
         </span> Random Wikipedia Article
-            </a>
+                </a>
+            </div>
 
-            <div class="col-sm-6">
+            <div class="col-sm-6 searchField">
                 <span class="glyphicon glyphicon-search"></span>
-                <input type="text" name="searchThis" placeholder="Search Wikipedia Articles" id="searchText" />
-                <input type="button" value="Search!" id="searchButton" />
+                <input type="text" class="form-control" name="searchThis" placeholder="Search Wikipedia Articles" id="searchText" />
+                <input type="button" class="btn btn-default searchButton" value="Search!" id="searchButton" />
 
             </div>
             <div>
                 <br />
                 <br />
             </div>
-            <div class="row resultsList buttonEntrance" id="resultsList">
+            <div class="row resultsList" id="resultsList">
 
                 <div class="col-xs-12">
                 </div>
@@ -104,7 +143,7 @@
 </body>
 
 <script>
-    //Listeners to check if user hit "Enter" or clicked "Search"
+    //Listeners to check if user hit "Enter" or clicked "Search".
     $(document).ready(function() {
         $('#searchButton').click(wikiSearch);
         $('#searchText').on('keydown', function() {
@@ -118,7 +157,7 @@
     function makeList(searchResults, resultsLength) {
         var titles = [];
         var snippets = [];
-        $('#resultsList').html('');
+        $('#resultsList').html(''); //Reset container contents each time a search is performed
         for (i = 0; i < resultsLength; i++) {
             titles[i] = searchResults.query.search[i]['title'];
             snippets[i] = searchResults.query.search[i]['snippet'];
@@ -136,23 +175,24 @@
             linkButton.setAttribute('target', '_blank');
             linkButton.appendChild(resultContainer);
             document.getElementById('resultsList').appendChild(linkButton);
+            //jQuery animations
             $('.animatedButton').css('margin-left', '100%');
-            $('.animatedButton').delay(i * 150).animate({
+            $('.animatedButton').delay(i * 75).animate({
                 'margin-left': '5%'
-            }, 1000);
+            }, 500);
         }
 
     }
 
-    //Verify that there are indeed results from the search.  Post error if no search results, otherwise fire it to makeList().
+    //Verify that there are actually results from the search.  Post error if no search results, otherwise fire it to makeList().
     function verifyJSON(data) {
         var searchResults = data;
         if (Object.prototype.hasOwnProperty.call(searchResults, 'error')) {
             document.getElementById('resultsList').innerHTML = 'Sorry, there was an error with your search.  Please try again.';
         } else {
-            console.log(searchResults);
+            //console.log(searchResults);
             var resultsLength = Object.keys(searchResults.query.search).length;
-            console.log(resultsLength);
+            //console.log(resultsLength);
             if (resultsLength === 0) {
                 document.getElementById('resultsList').innerHTML = 'Sorry, no results found.';
             } else {
